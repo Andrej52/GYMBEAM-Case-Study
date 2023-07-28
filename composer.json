@@ -1,0 +1,5 @@
+{
+    "require": {
+        "antoineaugusti/laravel-sentiment-analysis": "^4.1"
+    }
+}
