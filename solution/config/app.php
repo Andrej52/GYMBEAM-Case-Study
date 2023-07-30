@@ -182,7 +182,6 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'SentimentAnalysis' => Antoineaugusti\LaravelSentimentAnalysis\SentimentAnalysis::class,
     ])->toArray(),
 
 ];

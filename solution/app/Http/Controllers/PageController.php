@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ReviewController;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -18,6 +19,7 @@ class PageController extends Controller
 
     public function rated()
     { 
-        return view('rated');    
+       
+       return view('rated');    
     }
 }
