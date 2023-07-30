@@ -19,7 +19,6 @@ class PageController extends Controller
 
     public function rated()
     { 
-       
        return view('rated');    
     }
 }

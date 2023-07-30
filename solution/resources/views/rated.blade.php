@@ -7,33 +7,34 @@
     <title>reviews</title>
 </head>
 <body>
-    <div class="wrap">
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="products-info">Not rated</a></li>
+                <li><a href="rated">Rated</a></li>
+            </ul>
+        </nav>
         <section id="data">
             <div class="best">
-                <p>Best rated is :</p>
-                <h3 class="productName">Productname</h3>
-                <p class="rating">with score of : {"rating[0]"}</p>
+                <p class="title">Best rated is :</p>
+                <h3 class="productName">   {!!\App\Helpers\classLoader::controllerinstance()->data[0]['name']!!}</h3>
+                <p class="rating">with score of:  {!!\App\Helpers\classLoader::controllerinstance()->data[0]['rating']!!} </p>
                 <article class="productDesc">
-                    Desc
+                Description:    {!!\App\Helpers\classLoader::controllerinstance()->data[0]['desc']!!}
                 </article>
             </div>
             <div class="worst">
-                <p>Best rated is :</p>
-                <h3 class="productName">Productname:</h3>
-                <p class="rating">with score of : {"rating[rating.length]"}</p>
+                <p class="title">Worst rated is :</p>
+                <h3 class="productName">Product: {!!\App\Helpers\classLoader::controllerinstance()->data[\App\Helpers\classLoader::controllerinstance()->size-1]['name']!!} </h3>
+                <p class="rating">with score of : {!!\App\Helpers\classLoader::controllerinstance()->data[\App\Helpers\classLoader::controllerinstance()->size-1]['rating']!!}</p>
                 <article class="productDesc">
-                    Desc
+                Description:    {!!\App\Helpers\classLoader::controllerinstance()->data[\App\Helpers\classLoader::controllerinstance()->size-1]['desc']!!}
                 </article>
             </div>
         </section>
         <section id="other-data">
-            <p>Other  reviews: </p>
-            <?php use App\Http\Controllers\ReviewController;
-            $class = new ReviewController();
-            ?>
+            <p class="title">Other  reviews: (Descending)</p>
+            {{ \App\Helpers\classLoader::controllerinstance()->printData(true) }}
         </section>
-       
-    </div>
-
 </body>
 </html>

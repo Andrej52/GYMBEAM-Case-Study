@@ -4,55 +4,84 @@ namespace App\Http\Controllers;
 
 use Illuminate\Database\Query\IndexHint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Sentiment\Analyzer;
 class ReviewController extends Controller
 {
-    public $data= [];
-
+    public $data= [];  // array of data
+    public $size = 0;
     public function __construct() {
-        self::printData();
+        if(!$this->loadData("gymbeamData.csv"))
+        {
+            dd("file or path is incorrect");
+        }
+        if (empty($this->data)) {
+           dd("Data are  is empty!");
+        }
+
+        array_shift($this->data);
+        if ($_SERVER['REQUEST_URI'] == "/rated") {
+            if ( $this->sortData()) {
+                array_shift($this->data);
+                array_pop($this->data);
+                $this->size = sizeof($this->data);
+            }
+        }
+    }
+
+    // loading Data 
+    public function loadData($dataname)
+    {
+        $path = dirname(__DIR__,3);
+        $path= $path . "/public/";
+        if (!file_exists($path. $dataname)) {
+           return false;
+        }
+        $file = fopen($path . $dataname, "r");
+        while (!feof($file))
+        {
+            $arr = fgetcsv($file);
+            if ($arr) {
+                array_push($this->data, array('name' => $arr[0],'desc' => $arr[1], 'rating' => '0.0'));
+            }   
+        }
+        fclose($file);
+        return true;
 
     }
 
-    public function loadData($dataname)
-    {
-        $path = "C:\Users\Andrej\Desktop\DEV\WEB-desing\GYMBEAM-Case Study\solution\public/";
-        $file = fopen($path . $dataname, "r");
-
-        while (! feof($file))
-        {
-             $arr = fgetcsv($file);
-           // print_r($arr);
-           if ($arr == false) {
-            return;
-           }
-           array_push($this->data, array('name' => $arr[0],'desc' => $arr[1], 'rating' => '0.0'));
+    // rates Data by API analyzer from:
+    protected function rateData() {
+        $analyzer = new Analyzer(); 
+        for ($i=0; $i < sizeof($this->data)  ; $i++) { 
+            $ratingArr = $analyzer->getSentiment($this->data[$i]['desc']);
+            $this->data[$i]['rating'] = $ratingArr['compound'];
         }
-        fclose($file);
         return;
     }
 
-    public function printData() {
-        $this->loadData("gymbeamData.csv");
-       // print_r($this->data);
-        $this->rateData();
-    }
-
-    protected function rateData() {
-        $analyzer = new Analyzer(); 
-
-        for ($i=1; $i < sizeof($this->data)  ; $i++) { 
-            $ratingArr = $analyzer->getSentiment($this->data[$i]['desc']);
-            $this->data[$i]['rating'] = $ratingArr['compound'];
-           // echo ("arr id: " . $i. " name: " . $this->data[$i]['name'] .  " rating: " . $this->data[$i]['rating'] . "<br>");
-        }
-        $this->sortData();
-    }
-
+    // sorts data
     public function sortData()
     {
-        
+        $columns = array_column($this->data, 'rating');
+        if (array_multisort($columns, SORT_DESC, $this->data)) {
+            return true;
+        }
+        return false;
     }
-
-
+    
+    // print  Products without best and worst in descending order
+    public function printData($sorted) {
+        for ($i=0; $i <sizeof($this->data) ; $i++) { 
+            echo  '<div>
+            <h3 class="productName">Product: ' . $this->data[$i]['name'] . '</h3>';
+           if ($sorted) {
+           echo' <p class="rating">with score of: ' . $this->data[$i]['rating'] . '</p>';
+           };
+            echo ' <article class="productDesc">
+            Description: ' .$this->data[$i]['desc'] . '
+            </article>
+            </div>';
+        }
+    }
 }
